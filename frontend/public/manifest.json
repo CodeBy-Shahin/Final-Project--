@@ -1,0 +1,38 @@
+{
+  "name": "Smart Commerce",
+  "short_name": "SmartShop",
+  "description": "Your everyday essentials — groceries, beauty, home goods and more.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#f85606",
+  "categories": ["shopping", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Shop",
+      "url": "/products",
+      "description": "Browse all products"
+    },
+    {
+      "name": "My orders",
+      "url": "/dashboard",
+      "description": "View your orders"
+    }
+  ]
+}

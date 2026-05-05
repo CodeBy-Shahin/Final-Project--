@@ -1,0 +1,4 @@
+
+> backend@0.1.0 dev
+> tsx watch src/server.ts
+
