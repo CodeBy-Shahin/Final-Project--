@@ -1,4 +1,4 @@
-const CACHE = "smart-commerce-v1";
+const CACHE = "smart-commerce-v2";
 const OFFLINE_URL = "/offline";
 
 const PRECACHE = ["/", "/products", OFFLINE_URL];

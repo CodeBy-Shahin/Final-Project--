@@ -1,422 +1,439 @@
 'use client';
 
 import { useState } from 'react';
-import { MessageCircle, X, Send } from 'lucide-react';
+import { MessageCircle, Send, X } from 'lucide-react';
+
+import { fallbackProducts, siteConfig } from '@/lib/site';
+import { formatPrice, getDiscountPercentage, getStockMessage } from '@/lib/commerce';
+import type { Product } from '@/types/domain';
 
 interface Message {
-    id: string;
-    text: string;
-    sender: 'user' | 'bot';
-    timestamp: Date;
+  id: string;
+  text: string;
+  sender: 'user' | 'bot';
+  timestamp: Date;
 }
 
-// Product Database
-const PRODUCTS = [
-    {
-        name: 'Everyday Cotton Panjabi',
-        category: 'Fashion & Lifestyle',
-        price: 1690,
-        originalPrice: 1990,
-        vendor: 'Smart Commerce',
-        description: 'Light, breathable panjabi suitable for family gatherings, Friday wear, and everyday festive styling.',
-    },
-    {
-        name: 'Comfort Slide Sandals',
-        category: 'Fashion & Lifestyle',
-        price: 990,
-        originalPrice: 1250,
-        vendor: 'Smart Commerce',
-        description: 'Soft cushioned sandals designed for home use, errands, and all-day casual comfort.',
-    },
-    {
-        name: 'FastCharge Power Bank 20000mAh',
-        category: 'Electronics & Gadgets',
-        price: 2190,
-        originalPrice: 2590,
-        vendor: 'Smart Commerce',
-        description: 'High-capacity fast-charging power bank ideal for heavy phone users, travel, and power backup during outages.',
-    },
-    {
-        name: 'Non-Stick Fry Pan 28cm',
-        category: 'Kitchen & Dining',
-        price: 1450,
-        originalPrice: 1690,
-        vendor: 'Smart Commerce',
-        description: 'Everyday fry pan with easy-clean coating for quick breakfasts and regular cooking.',
-    },
-    {
-        name: 'Compact Kitchen Blender 1.5L',
-        category: 'Kitchen & Dining',
-        price: 2890,
-        originalPrice: 3390,
-        vendor: 'Smart Commerce',
-        description: 'Reliable blender for smoothies, spice pastes, sauces, and quick kitchen prep. (Out of stock)',
-        inStock: false,
-    },
-    {
-        name: 'Herbal Repair Shampoo 650ml',
-        category: 'Personal Care',
-        price: 520,
-        originalPrice: 610,
-        vendor: 'Smart Commerce',
-        description: 'Salon-style shampoo with herbal extracts for soft, manageable daily hair care.',
-    },
-    {
-        name: 'Family Laundry Detergent 3kg',
-        category: 'Home Care',
-        price: 640,
-        originalPrice: 760,
-        vendor: 'Smart Commerce',
-        description: 'Deep-clean detergent suitable for large family washing loads with long-lasting freshness.',
-    },
-    {
-        name: 'Cold Pressed Mustard Oil 1L',
-        category: 'Grocery Essentials',
-        price: 260,
-        originalPrice: 300,
-        vendor: 'Smart Commerce',
-        description: 'Rich mustard oil ideal for traditional cooking, curries, and frying.',
-    },
-    {
-        name: 'Fresh Farm Eggs (12 pcs)',
-        category: 'Grocery Essentials',
-        price: 195,
-        originalPrice: 220,
-        vendor: 'Smart Commerce',
-        description: 'Clean, carefully packed eggs for breakfast, baking, and healthy meals.',
-    },
-    // Muntakim Computer Products
-    {
-        name: 'Core i5 12th Gen Desktop PC',
-        category: 'Computers',
-        price: 52000,
-        vendor: 'Muntakim',
-        description: 'Powerful desktop setup with Intel Core i5 12th Gen processor, 8GB RAM, and 512GB SSD. Ideal for office work, freelancing, and light gaming.',
-    },
-    {
-        name: '24-inch Full HD LED Monitor',
-        category: 'Computers',
-        price: 14500,
-        vendor: 'Muntakim',
-        description: 'Sleek 24-inch monitor with Full HD resolution, vibrant colors, and eye-care technology for long working hours.',
-    },
-    {
-        name: 'Mechanical RGB Gaming Keyboard',
-        category: 'Computers',
-        price: 3200,
-        vendor: 'Muntakim',
-        description: 'Durable mechanical keyboard with RGB lighting, responsive keys, and comfortable design for gaming and typing.',
-    },
-    {
-        name: 'Wireless Optical Mouse',
-        category: 'Computers',
-        price: 850,
-        vendor: 'Muntakim',
-        description: 'Smooth and precise wireless mouse with ergonomic design, perfect for everyday computing and office use.',
-    },
-    {
-        name: '512GB NVMe SSD',
-        category: 'Computers',
-        price: 5800,
-        vendor: 'Muntakim',
-        description: 'High-speed NVMe SSD for faster boot times, quick file transfers, and improved system performance.',
-    },
-    {
-        name: 'Gaming Headset with Mic',
-        category: 'Computers',
-        price: 2400,
-        vendor: 'Muntakim',
-        description: 'Comfortable over-ear gaming headset with clear microphone, deep bass sound, and noise isolation for immersive gameplay.',
-    },
-];
-
-const APP_RESPONSES: Record<string, string> = {
-    'what is smart commerce': 'Smart Commerce is an e-commerce platform offering groceries, beauty products, home goods, gadgets, and fashion items all in one place.',
-    'how do i place an order': 'You can browse products, add items to your cart, and proceed to checkout. You\'ll need to log in to complete your purchase.',
-    'what are your delivery options': 'We offer fast delivery options. Check the checkout page for available delivery slots in your area.',
-    'how do i track my order': 'Once your order is placed, you can track it from your Orders page by logging into your account.',
-    'what payment methods do you accept': 'We accept all major payment methods including credit cards, debit cards, and digital wallets.',
-    'how do i return a product': 'You can initiate returns from your Orders page within 7 days of delivery. Contact support for more details.',
-    'do you have a mobile app': 'Yes, Smart Commerce is accessible on all devices and works as a progressive web app.',
-    'how do i contact support': 'Click on this chat widget to connect with our support team. We\'re here to help!',
-    'what are your business hours': 'Our support team is available 24/7 to assist you.',
-    'how do i create an account': 'Click the Login button at the top of the page and select Sign Up to create your account.',
+type KnowledgeEntry = {
+  title: string;
+  keywords: string[];
+  answer: string;
 };
 
-function findProduct(query: string) {
-    const lowerQuery = query.toLowerCase();
-    return PRODUCTS.find(p =>
-        p.name.toLowerCase().includes(lowerQuery) ||
-        p.category.toLowerCase().includes(lowerQuery)
-    );
+const STOP_WORDS = new Set([
+  'a',
+  'an',
+  'and',
+  'are',
+  'can',
+  'do',
+  'does',
+  'for',
+  'how',
+  'i',
+  'in',
+  'is',
+  'me',
+  'of',
+  'on',
+  'the',
+  'to',
+  'what',
+  'with',
+  'you',
+  'your',
+]);
+
+const CATEGORY_ALIASES: Record<string, string[]> = {
+  'Grocery Essentials': ['grocery', 'groceries', 'rice', 'egg', 'eggs', 'oil', 'food', 'pantry'],
+  'Home Care': ['home care', 'laundry', 'detergent', 'cleaner', 'floor', 'cleaning', 'home'],
+  'Personal Care': ['personal care', 'beauty', 'shampoo', 'face wash', 'grooming', 'skin', 'hair'],
+  'Kitchen & Dining': ['kitchen', 'dining', 'cookware', 'pan', 'blender', 'lunch box', 'appliance'],
+  'Electronics & Gadgets': ['electronics', 'gadgets', 'power bank', 'lantern', 'mobile', 'tech'],
+  'Fashion & Lifestyle': ['fashion', 'lifestyle', 'panjabi', 'sandals', 'footwear', 'menswear'],
+};
+
+const KNOWLEDGE_BASE: KnowledgeEntry[] = [
+  {
+    title: 'Smart Commerce overview',
+    keywords: ['smart commerce', 'about', 'platform', 'ecommerce', 'marketplace', 'what is'],
+    answer: `${siteConfig.name} is a full-stack e-commerce platform with a customer storefront, cart and checkout flow, order tracking, role-based dashboards, product management, inventory alerts, analytics, and audit logging. ${siteConfig.description}`,
+  },
+  {
+    title: 'Customer shopping flow',
+    keywords: ['order', 'buy', 'purchase', 'checkout', 'cart', 'customer flow', 'place order'],
+    answer:
+      'Customer flow: browse products, open a product detail page, add items to cart, go to /cart, proceed to checkout, enter shipping details, choose COD/card/bank payment, submit the order, then view the confirmation and order status from /dashboard.',
+  },
+  {
+    title: 'Order tracking',
+    keywords: ['track', 'tracking', 'order status', 'my order', 'dashboard orders'],
+    answer:
+      'Customers can track orders from the customer dashboard at /dashboard. Order statuses move through pending, processing, shipped, delivered, and can be reviewed from the order history area.',
+  },
+  {
+    title: 'Payment methods',
+    keywords: ['payment', 'pay', 'cod', 'card', 'bank', 'cash'],
+    answer:
+      'The checkout flow supports cash on delivery, card, and bank payment options. Seeded demo orders include COD and card payments with paid or pending payment status.',
+  },
+  {
+    title: 'Admin dashboard',
+    keywords: ['admin', 'administrator', 'dashboard', 'analytics', 'users', 'vendors', 'audit'],
+    answer:
+      'Admins use /admin to monitor KPIs, revenue trends, inventory alerts, recent orders, top products, and audit activity. Admin pages also include order management, user activation/disable controls, vendor account creation, and inventory views.',
+  },
+  {
+    title: 'Vendor dashboard',
+    keywords: ['vendor', 'seller', 'vendor dashboard', 'products manage', 'vendor orders'],
+    answer:
+      'Vendors use /vendor to see overview stats, manage products at /vendor/products, create new products at /vendor/products/new, review incoming orders at /vendor/orders, and update delivery status through pending, processing, shipped, and delivered.',
+  },
+  {
+    title: 'Inventory intelligence',
+    keywords: ['inventory', 'stock', 'reorder', 'low stock', 'forecast', 'demand'],
+    answer:
+      'Smart Commerce tracks stock, reorder points, low-stock alerts, product velocity metrics, and recommended reorder quantities. The project roadmap also includes demand forecasting and recommendation features for smarter inventory planning.',
+  },
+  {
+    title: 'Demo accounts',
+    keywords: ['login', 'demo account', 'credentials', 'password', 'email', 'quick fill'],
+    answer:
+      'Demo accounts: Admin uses admin@smartcommerce.local / Admin12345 at /admin. Vendor uses vendor@smartcommerce.local / Vendor1234 at /vendor. Customer uses customer@smartcommerce.local / Customer123 at /dashboard. The login page also has quick-fill buttons.',
+  },
+  {
+    title: 'Technology stack',
+    keywords: ['tech stack', 'technology', 'frontend', 'backend', 'database', 'next', 'express', 'mongodb'],
+    answer:
+      'The project uses Next.js 16, React 19, TypeScript, Tailwind CSS, and shadcn/ui on the frontend. The backend uses Express 5, Node.js 22, TypeScript, MongoDB 8 with Mongoose, JWT auth, Docker, and Docker Compose.',
+  },
+  {
+    title: 'Local run commands',
+    keywords: ['run', 'start', 'docker', 'seed', 'localhost', 'setup', 'install'],
+    answer:
+      'Recommended run flow: docker compose up --build, then seed with docker compose exec backend node dist/seed.js. The frontend runs at http://localhost:3000, backend API at http://localhost:5000, and MongoDB at port 27017.',
+  },
+  {
+    title: 'Roles and permissions',
+    keywords: ['role', 'roles', 'rbac', 'permission', 'super admin', 'inventory manager', 'analyst'],
+    answer:
+      'Seeded roles include super_admin, admin, inventory_manager, analyst, vendor, and customer. The backend includes RBAC-ready middleware and permissions such as products.manage, orders.manage, analytics.read, audit.read, forecast.read, and catalog.read.',
+  },
+  {
+    title: 'Support and app availability',
+    keywords: ['support', 'contact', 'mobile app', 'pwa', 'business hours', 'help'],
+    answer:
+      'Smart Commerce is responsive and works as a progressive web app. For help inside the demo, use this chat widget; it can answer questions about products, orders, roles, dashboards, and setup.',
+  },
+];
+
+function normalize(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9\s-]/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-function getProductsInCategory(category: string) {
-    return PRODUCTS.filter(p => p.category.toLowerCase().includes(category.toLowerCase()));
+function tokenize(value: string) {
+  return normalize(value)
+    .split(' ')
+    .filter((token) => token.length > 1 && !STOP_WORDS.has(token));
 }
 
-function getProductsByVendor(vendor: string) {
-    return PRODUCTS.filter(p => p.vendor.toLowerCase().includes(vendor.toLowerCase()));
+function getProductSearchText(product: Product) {
+  return [
+    product.name,
+    product.sku,
+    product.slug,
+    product.description,
+    product.category?.name,
+    product.category?.slug,
+    ...product.tags,
+  ]
+    .filter(Boolean)
+    .join(' ');
 }
 
-function findProductsByVendorAndCategory(vendor: string, category: string) {
-    return PRODUCTS.filter(p =>
-        p.vendor.toLowerCase().includes(vendor.toLowerCase()) &&
-        p.category.toLowerCase().includes(category.toLowerCase())
-    );
-}
+function scoreText(query: string, target: string) {
+  const normalizedQuery = normalize(query);
+  const normalizedTarget = normalize(target);
+  const tokens = tokenize(query);
 
-function formatProductInfo(product: any): string {
-    let priceStr = `💰 Price: BDT ${product.price}`;
-    if (product.originalPrice) {
-        const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
-        priceStr += ` (was BDT ${product.originalPrice}) - ${discount}% OFF`;
+  let score = 0;
+
+  if (normalizedTarget.includes(normalizedQuery)) {
+    score += 8;
+  }
+
+  for (const token of tokens) {
+    if (normalizedTarget.includes(token)) {
+      score += token.length > 3 ? 2 : 1;
     }
-    const stockStatus = product.inStock === false ? '❌ Out of stock' : '✅ In stock';
-    const vendor = product.vendor ? `👨‍💼 Vendor: ${product.vendor}` : '';
-    return `
-📦 ${product.name}
-${priceStr}
-📝 ${product.description}
-${stockStatus}
-${vendor}
-    `.trim();
+  }
+
+  return score;
+}
+
+function findBestProduct(query: string) {
+  return fallbackProducts
+    .map((product) => ({
+      product,
+      score: scoreText(query, getProductSearchText(product)) + (normalize(product.name).includes(normalize(query)) ? 8 : 0),
+    }))
+    .sort((a, b) => b.score - a.score)[0];
+}
+
+function findCategory(query: string) {
+  const normalizedQuery = normalize(query);
+
+  return Object.entries(CATEGORY_ALIASES).find(([category, aliases]) => {
+    const categoryMatch = normalize(category).includes(normalizedQuery) || normalizedQuery.includes(normalize(category));
+    const aliasMatch = aliases.some((alias) => normalizedQuery.includes(normalize(alias)));
+
+    return categoryMatch || aliasMatch;
+  })?.[0];
+}
+
+function formatProductInfo(product: Product): string {
+  const discount = getDiscountPercentage(product);
+  const stockMessage = getStockMessage(product);
+  const compareAt = product.compareAtPrice ? `, was ${formatPrice(product.compareAtPrice)}` : '';
+  const discountText = discount > 0 ? ` (${discount}% off)` : '';
+
+  return [
+    `${product.name}`,
+    `SKU: ${product.sku}`,
+    `Category: ${product.category?.name ?? 'Uncategorized'}`,
+    `Price: ${formatPrice(product.price)}${compareAt}${discountText}`,
+    `Stock: ${product.stock} units - ${stockMessage}`,
+    `Rating: ${product.rating}/5`,
+    `Details: ${product.description}`,
+  ].join('\n');
+}
+
+function formatProductList(products: Product[], heading: string) {
+  return [
+    heading,
+    ...products.map((product) => {
+      const stockMessage = getStockMessage(product);
+      return `- ${product.name}: ${formatPrice(product.price)} (${stockMessage}, stock ${product.stock})`;
+    }),
+  ].join('\n');
+}
+
+function answerProductQuestion(message: string) {
+  const lowerMessage = normalize(message);
+
+  if (lowerMessage.includes('discount') || lowerMessage.includes('sale') || lowerMessage.includes('offer')) {
+    const discountedProducts = fallbackProducts
+      .filter((product) => getDiscountPercentage(product) > 0)
+      .sort((a, b) => getDiscountPercentage(b) - getDiscountPercentage(a))
+      .slice(0, 6);
+
+    return formatProductList(discountedProducts, 'Current discounted products:');
+  }
+
+  if (lowerMessage.includes('featured') || lowerMessage.includes('popular') || lowerMessage.includes('top')) {
+    const featuredProducts = fallbackProducts.filter((product) => product.featured).slice(0, 6);
+
+    return formatProductList(featuredProducts, 'Featured products:');
+  }
+
+  if (lowerMessage.includes('category') || lowerMessage.includes('categories') || lowerMessage.includes('what products') || lowerMessage.includes('what do you sell')) {
+    const categories = [...new Set(fallbackProducts.map((product) => product.category?.name).filter(Boolean))];
+
+    return `Smart Commerce sells products in these categories:\n${categories.map((category) => `- ${category}`).join('\n')}\n\nAsk about any category to see matching products.`;
+  }
+
+  const category = findCategory(message);
+  if (category) {
+    const products = fallbackProducts.filter((product) => product.category?.name === category);
+
+    return formatProductList(products, `${category} products:`);
+  }
+
+  const bestProduct = findBestProduct(message);
+  if (bestProduct && bestProduct.score >= 3) {
+    return formatProductInfo(bestProduct.product);
+  }
+
+  if (lowerMessage.includes('product') || lowerMessage.includes('price') || lowerMessage.includes('stock') || lowerMessage.includes('available')) {
+    return formatProductList(fallbackProducts.slice(0, 8), 'Here are some available products:');
+  }
+
+  return null;
+}
+
+function answerFromKnowledgeBase(message: string) {
+  const bestEntry = KNOWLEDGE_BASE.map((entry) => ({
+    entry,
+    score: scoreText(message, `${entry.title} ${entry.keywords.join(' ')}`),
+  })).sort((a, b) => b.score - a.score)[0];
+
+  if (bestEntry && bestEntry.score >= 3) {
+    return bestEntry.entry.answer;
+  }
+
+  return null;
 }
 
 function getBotResponse(userMessage: string): string {
-    const lowerMessage = userMessage.toLowerCase().trim();
+  const trimmedMessage = userMessage.trim();
 
-    // Check for predefined responses
-    for (const [key, response] of Object.entries(APP_RESPONSES)) {
-        if (lowerMessage.includes(key)) {
-            return response;
-        }
-    }
+  if (!trimmedMessage) {
+    return 'Please type a question about products, orders, accounts, dashboards, inventory, or project setup.';
+  }
 
-    // Check for vendor queries (e.g., "What does Muntakim sell?", "Muntakim computer products")
-    if (lowerMessage.includes('muntakim')) {
-        // If asking about specific category by Muntakim
-        if (lowerMessage.includes('computer')) {
-            const muntakimComputers = findProductsByVendorAndCategory('Muntakim', 'Computers');
-            if (muntakimComputers.length > 0) {
-                return `📦 Computer Products by Muntakim:\n\n${muntakimComputers.map(p =>
-                    `• ${p.name} - BDT ${p.price}\n  ${p.description.substring(0, 60)}...`
-                ).join('\n\n')}`;
-            }
-        }
+  const productAnswer = answerProductQuestion(trimmedMessage);
+  if (productAnswer) {
+    return productAnswer;
+  }
 
-        // General Muntakim query
-        const muntakimProducts = getProductsByVendor('Muntakim');
-        if (muntakimProducts.length > 0) {
-            return `✨ Products by Muntakim:\n\n${muntakimProducts.map(p =>
-                `• ${p.name} - BDT ${p.price}`
-            ).join('\n')}\n\nAsk me about any specific Muntakim product!`;
-        }
-    }
+  const knowledgeAnswer = answerFromKnowledgeBase(trimmedMessage);
+  if (knowledgeAnswer) {
+    return knowledgeAnswer;
+  }
 
-    // Check for "who sells" queries (e.g., "who sells computer products?")
-    if (lowerMessage.includes('who sells') || lowerMessage.includes('who has')) {
-        if (lowerMessage.includes('computer')) {
-            const computerVendors = [...new Set(PRODUCTS.filter(p => p.category === 'Computers').map(p => p.vendor))];
-            if (computerVendors.length > 0) {
-                return `🖥️ Computer products are available from: ${computerVendors.join(', ')}\n\nAsk me about their products!`;
-            }
-        }
-    }
-
-    // Check for specific product queries
-    if (lowerMessage.includes('price') || lowerMessage.includes('cost') || lowerMessage.includes('how much')) {
-        const product = findProduct(userMessage);
-        if (product) {
-            return formatProductInfo(product);
-        }
-    }
-
-    // Check for category queries
-    const categories = ['fashion', 'electronics', 'kitchen', 'personal care', 'home care', 'grocery', 'computer'];
-    for (const category of categories) {
-        if (lowerMessage.includes(category)) {
-            const categoryName = category === 'personal care' ? 'Personal Care' :
-                category === 'home care' ? 'Home Care' :
-                    category === 'grocery' ? 'Grocery Essentials' :
-                        category === 'electronics' ? 'Electronics & Gadgets' :
-                            category === 'kitchen' ? 'Kitchen & Dining' :
-                                category === 'computer' ? 'Computers' :
-                                    'Fashion & Lifestyle';
-
-            const products = getProductsInCategory(categoryName);
-            if (products.length > 0) {
-                return `Here are our ${categoryName} products:\n\n${products.map(p =>
-                    `• ${p.name} - BDT ${p.price}${p.originalPrice ? ` (was BDT ${p.originalPrice})` : ''}`
-                ).join('\n')}`;
-            }
-        }
-    }
-
-    // Check for specific product names
-    const product = findProduct(userMessage);
-    if (product) {
-        return formatProductInfo(product);
-    }
-
-    // Generic product inquiry - list available products
-    if (lowerMessage.includes('product') && !lowerMessage.includes('category')) {
-        const randomProducts = PRODUCTS.slice(0, 5);
-        return `Here are some popular products:\n\n${randomProducts.map(p =>
-            `• ${p.name} - BDT ${p.price}`
-        ).join('\n')}\n\nAsk me about any specific product or category!`;
-    }
-
-    // Check for discount/sale queries
-    if (lowerMessage.includes('discount') || lowerMessage.includes('sale') || lowerMessage.includes('offer')) {
-        const discountProducts = PRODUCTS.filter(p => p.originalPrice).map(p => ({
-            ...p,
-            discount: Math.round(((p.originalPrice! - p.price) / p.originalPrice!) * 100)
-        })).sort((a, b) => b.discount - a.discount);
-
-        if (discountProducts.length > 0) {
-            return `🎉 Check out our current offers:\n\n${discountProducts.slice(0, 5).map(p =>
-                `• ${p.name} - ${p.discount}% OFF! Now BDT ${p.price}`
-            ).join('\n')}\n\nBrowse all products to see more deals!`;
-        }
-    }
-
-    // Check for what products available
-    if (lowerMessage.includes('what') && (lowerMessage.includes('product') || lowerMessage.includes('sell') || lowerMessage.includes('have'))) {
-        const categories = [...new Set(PRODUCTS.map(p => p.category))];
-        return `We have products in these categories:\n\n${categories.map(cat => `• ${cat}`).join('\n')}\n\nAsk me about any category or specific product!`;
-    }
-
-    return 'I can help you with:\n• Product information and prices\n• Category browsing\n• Orders and delivery\n• Account help\n\nWhat would you like to know?';
+  return [
+    'I can answer from the Smart Commerce project data. Try asking about:',
+    '- product prices, stock, categories, discounts, or featured items',
+    '- checkout, cart, order tracking, and payment methods',
+    '- admin, vendor, and customer dashboards',
+    '- demo login accounts',
+    '- inventory alerts, analytics, tech stack, or Docker setup',
+  ].join('\n');
 }
 
 interface ChatWidgetProps {
-    position?: 'left' | 'right' | 'bottom';
+  position?: 'left' | 'right' | 'bottom';
 }
 
 export default function ChatWidget({ position = 'bottom' }: ChatWidgetProps) {
-    const [isOpen, setIsOpen] = useState(false);
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            id: '1',
-            text: 'Hi! 👋 Welcome to Smart Commerce. How can I help you today?',
-            sender: 'bot',
-            timestamp: new Date(),
-        },
-    ]);
-    const [inputValue, setInputValue] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      text: 'Hi! Welcome to Smart Commerce. Ask me about products, orders, accounts, dashboards, or project setup.',
+      sender: 'bot',
+      timestamp: new Date(),
+    },
+  ]);
+  const [inputValue, setInputValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-    const handleSendMessage = async () => {
-        if (!inputValue.trim()) return;
+  const handleSendMessage = async () => {
+    const currentInput = inputValue.trim();
 
-        const userMessage: Message = {
-            id: Date.now().toString(),
-            text: inputValue,
-            sender: 'user',
-            timestamp: new Date(),
-        };
+    if (!currentInput || isLoading) return;
 
-        setMessages((prev) => [...prev, userMessage]);
-        setInputValue('');
-        setIsLoading(true);
-
-        setTimeout(() => {
-            const botResponse: Message = {
-                id: (Date.now() + 1).toString(),
-                text: getBotResponse(inputValue),
-                sender: 'bot',
-                timestamp: new Date(),
-            };
-            setMessages((prev) => [...prev, botResponse]);
-            setIsLoading(false);
-        }, 500);
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      text: currentInput,
+      sender: 'user',
+      timestamp: new Date(),
     };
 
-    const positionClasses = {
-        left: 'left-4 bottom-4',
-        right: 'right-4 bottom-4',
-        bottom: 'left-1/2 -translate-x-1/2 bottom-4',
-    };
+    setMessages((prev) => [...prev, userMessage]);
+    setInputValue('');
+    setIsLoading(true);
 
-    return (
-        <div className={`fixed ${positionClasses[position]} z-50 font-sans`}>
-            {isOpen && (
-                <div className="mb-4 w-96 max-h-96 bg-white rounded-lg shadow-2xl flex flex-col border border-gray-200 animate-in fade-in slide-in-from-bottom-2">
-                    {/* Header */}
-                    <div className="bg-orange-600 text-white p-4 rounded-t-lg flex justify-between items-center">
-                        <div>
-                            <h3 className="font-bold text-lg">Smart Commerce Support</h3>
-                            <p className="text-xs opacity-90">We typically reply instantly</p>
-                        </div>
-                        <button
-                            onClick={() => setIsOpen(false)}
-                            className="text-white hover:bg-orange-700 p-1 rounded"
-                        >
-                            <X size={20} />
-                        </button>
-                    </div>
+    setTimeout(() => {
+      const botResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        text: getBotResponse(currentInput),
+        sender: 'bot',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, botResponse]);
+      setIsLoading(false);
+    }, 350);
+  };
 
-                    {/* Messages */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
-                        {messages.map((message) => (
-                            <div
-                                key={message.id}
-                                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                            >
-                                <div
-                                    className={`max-w-xs px-4 py-2 rounded-lg ${message.sender === 'user'
-                                        ? 'bg-orange-600 text-white rounded-br-none'
-                                        : 'bg-gray-200 text-gray-900 rounded-bl-none'
-                                        }`}
-                                >
-                                    <p className="text-sm">{message.text}</p>
-                                </div>
-                            </div>
-                        ))}
-                        {isLoading && (
-                            <div className="flex justify-start">
-                                <div className="bg-gray-200 text-gray-900 px-4 py-2 rounded-lg rounded-bl-none">
-                                    <div className="flex space-x-2">
-                                        <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-                                        <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-100"></div>
-                                        <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-200"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+  const positionClasses = {
+    left: 'left-4 bottom-4',
+    right: 'right-4 bottom-4',
+    bottom: 'left-1/2 -translate-x-1/2 bottom-4',
+  };
 
-                    {/* Input */}
-                    <div className="border-t border-gray-200 p-4 bg-white rounded-b-lg">
-                        <div className="flex gap-2">
-                            <input
-                                type="text"
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                                placeholder="Type your message..."
-                                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-600 text-sm"
-                            />
-                            <button
-                                onClick={handleSendMessage}
-                                disabled={isLoading}
-                                className="bg-orange-600 text-white p-2 rounded-lg hover:bg-orange-700 disabled:opacity-50"
-                            >
-                                <Send size={18} />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Toggle Button */}
+  return (
+    <div className={`fixed ${positionClasses[position]} z-50 font-sans`}>
+      {isOpen && (
+        <div className="mb-4 flex max-h-[32rem] w-[calc(100vw-2rem)] max-w-96 flex-col rounded-lg border border-gray-200 bg-white shadow-2xl animate-in fade-in slide-in-from-bottom-2">
+          <div className="flex items-center justify-between rounded-t-lg bg-orange-600 p-4 text-white">
+            <div>
+              <h3 className="text-lg font-bold">Smart Commerce Support</h3>
+              <p className="text-xs opacity-90">Answers from project data</p>
+            </div>
             <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="bg-orange-600 text-white p-4 rounded-full shadow-lg hover:bg-orange-700 transition-all duration-300 animate-pulse hover:animate-none"
+              type="button"
+              aria-label="Close chat"
+              onClick={() => setIsOpen(false)}
+              className="rounded p-1 text-white hover:bg-orange-700"
             >
-                <MessageCircle size={24} />
+              <X size={20} />
             </button>
+          </div>
+
+          <div className="flex-1 space-y-3 overflow-y-auto bg-gray-50 p-4">
+            {messages.map((message) => (
+              <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div
+                  className={`max-w-xs rounded-lg px-4 py-2 ${
+                    message.sender === 'user'
+                      ? 'rounded-br-none bg-orange-600 text-white'
+                      : 'rounded-bl-none bg-gray-200 text-gray-900'
+                  }`}
+                >
+                  <p className="whitespace-pre-line text-sm leading-relaxed">{message.text}</p>
+                </div>
+              </div>
+            ))}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="rounded-lg rounded-bl-none bg-gray-200 px-4 py-2 text-gray-900">
+                  <div className="flex space-x-2">
+                    <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500" />
+                    <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500 delay-100" />
+                    <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500 delay-200" />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="rounded-b-lg border-t border-gray-200 bg-white p-4">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(event) => setInputValue(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') {
+                    void handleSendMessage();
+                  }
+                }}
+                placeholder="Ask about products, orders, setup..."
+                className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-600 focus:outline-none"
+              />
+              <button
+                type="button"
+                aria-label="Send message"
+                onClick={() => void handleSendMessage()}
+                disabled={isLoading}
+                className="rounded-lg bg-orange-600 p-2 text-white hover:bg-orange-700 disabled:opacity-50"
+              >
+                <Send size={18} />
+              </button>
+            </div>
+          </div>
         </div>
-    );
+      )}
+
+      <button
+        type="button"
+        aria-label={isOpen ? 'Close chat' : 'Open chat'}
+        onClick={() => setIsOpen(!isOpen)}
+        className="rounded-full bg-orange-600 p-4 text-white shadow-lg transition-all duration-300 hover:bg-orange-700"
+      >
+        <MessageCircle size={24} />
+      </button>
+    </div>
+  );
 }

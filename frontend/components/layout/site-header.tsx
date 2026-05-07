@@ -1,12 +1,12 @@
 "use client";
 
 import type { FormEvent } from "react";
+import { useState } from "react";
 
 import Link from "next/link";
 import {
   LayoutDashboard,
   MapPinHouse,
-  Search,
   ShieldCheck,
   ShoppingBag,
   ShoppingCart,
@@ -18,9 +18,9 @@ import { useRouter } from "next/navigation";
 
 import { LogoutButton } from "@/components/auth/logout-button";
 import { useSession } from "@/components/auth/session-provider";
+import { ProductSearchInput } from "@/components/storefront/product-search-input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { formatRoleLabel, getDashboardPath } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
 
@@ -37,12 +37,12 @@ export function SiteHeader() {
   const router = useRouter();
   const { session } = useSession();
   const { count } = useCart();
+  const [query, setQuery] = useState("");
 
   function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const query = String(formData.get("query") ?? "").trim();
-    router.push(query ? `/products?query=${encodeURIComponent(query)}` : "/products");
+    const searchQuery = query.trim();
+    router.push(searchQuery ? `/products?query=${encodeURIComponent(searchQuery)}` : "/products");
   }
 
   const dashboardPath = session ? getDashboardPath(session.user.role) : null;
@@ -85,14 +85,17 @@ export function SiteHeader() {
           </Link>
 
           <form className="grid gap-3 sm:grid-cols-[1fr_auto] lg:mx-2" onSubmit={handleSearchSubmit}>
-            <div className="flex items-center rounded-xl border border-border bg-card px-3 shadow-sm">
-              <Search className="size-4 text-muted-foreground" />
-              <Input
-                name="query"
-                placeholder="Search rice, beauty, cookware, gadgets and more"
-                className="border-0 bg-transparent shadow-none focus-visible:ring-0"
-              />
-            </div>
+            <ProductSearchInput
+              value={query}
+              onChange={setQuery}
+              onSearch={(value) => {
+                const searchQuery = value.trim();
+                router.push(searchQuery ? `/products?query=${encodeURIComponent(searchQuery)}` : "/products");
+              }}
+              placeholder="Search rice, beauty, cookware, gadgets and more"
+              className="rounded-xl border border-border bg-card shadow-sm"
+              inputClassName="border-0 bg-transparent shadow-none focus-visible:ring-0"
+            />
             <Button type="submit" size="lg" className="h-11">
               Search
             </Button>
