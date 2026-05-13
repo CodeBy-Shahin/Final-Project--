@@ -87,7 +87,7 @@ async function seed() {
     { new: true, upsert: true },
   );
 
-  await UserModel.findOneAndUpdate(
+  const demoVendor = await UserModel.findOneAndUpdate(
     { email: "vendor@smartcommerce.local" },
     {
       $set: {
@@ -363,7 +363,7 @@ async function seed() {
       categorySlug: "electronics-gadgets",
       price: 2190,
       compareAtPrice: 2590,
-      stock: 15,
+      stock: 4,
       reorderPoint: 8,
       rating: 4.8,
       featured: true,
@@ -455,7 +455,7 @@ async function seed() {
       categorySlug: "kitchen-dining",
       price: 2890,
       compareAtPrice: 3390,
-      stock: 12,
+      stock: 0,
       reorderPoint: 6,
       rating: 4.6,
       featured: false,
@@ -489,6 +489,7 @@ async function seed() {
           sku: product.sku,
           description: product.description,
           category: categoryId,
+          vendor: demoVendor._id,
           price: product.price,
           compareAtPrice: product.compareAtPrice,
           stock: product.stock,
@@ -581,6 +582,120 @@ async function seed() {
         total: subtotal + shippingFee,
       });
     }
+  }
+
+  const daysAgo = (days: number) => new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+  const forecastOrderSeeds = [
+    {
+      orderNumber: "FCAST-2026-W5-001",
+      customerName: "Forecast Demo W5",
+      customerEmail: "forecast-w5@example.com",
+      status: "delivered",
+      paymentStatus: "paid",
+      createdAt: daysAgo(35),
+      items: [
+        { product: savedProducts[1], quantity: 3 },
+        { product: savedProducts[0], quantity: 6 },
+        { product: savedProducts[13], quantity: 8 },
+      ],
+    },
+    {
+      orderNumber: "FCAST-2026-W4-001",
+      customerName: "Forecast Demo W4",
+      customerEmail: "forecast-w4@example.com",
+      status: "delivered",
+      paymentStatus: "paid",
+      createdAt: daysAgo(28),
+      items: [
+        { product: savedProducts[1], quantity: 5 },
+        { product: savedProducts[0], quantity: 6 },
+        { product: savedProducts[13], quantity: 6 },
+      ],
+    },
+    {
+      orderNumber: "FCAST-2026-W3-001",
+      customerName: "Forecast Demo W3",
+      customerEmail: "forecast-w3@example.com",
+      status: "delivered",
+      paymentStatus: "paid",
+      createdAt: daysAgo(21),
+      items: [
+        { product: savedProducts[1], quantity: 8 },
+        { product: savedProducts[0], quantity: 7 },
+        { product: savedProducts[13], quantity: 5 },
+      ],
+    },
+    {
+      orderNumber: "FCAST-2026-W2-001",
+      customerName: "Forecast Demo W2",
+      customerEmail: "forecast-w2@example.com",
+      status: "shipped",
+      paymentStatus: "paid",
+      createdAt: daysAgo(14),
+      items: [
+        { product: savedProducts[1], quantity: 12 },
+        { product: savedProducts[0], quantity: 6 },
+        { product: savedProducts[13], quantity: 3 },
+      ],
+    },
+    {
+      orderNumber: "FCAST-2026-W1-001",
+      customerName: "Forecast Demo W1",
+      customerEmail: "forecast-w1@example.com",
+      status: "processing",
+      paymentStatus: "pending",
+      createdAt: daysAgo(7),
+      items: [
+        { product: savedProducts[1], quantity: 16 },
+        { product: savedProducts[0], quantity: 7 },
+        { product: savedProducts[13], quantity: 2 },
+      ],
+    },
+    {
+      orderNumber: "FCAST-2026-CURRENT-001",
+      customerName: "Forecast Demo Current",
+      customerEmail: "forecast-current@example.com",
+      status: "delivered",
+      paymentStatus: "paid",
+      createdAt: daysAgo(1),
+      items: [
+        { product: savedProducts[1], quantity: 20 },
+        { product: savedProducts[0], quantity: 6 },
+        { product: savedProducts[13], quantity: 1 },
+        { product: savedProducts[9], quantity: 7 },
+      ],
+    },
+  ];
+
+  for (const order of forecastOrderSeeds) {
+    const items = order.items.map(({ product, quantity }) => ({
+      product: product._id,
+      productName: product.name,
+      quantity,
+      unitPrice: product.price,
+    }));
+    const subtotal = items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+    const shippingFee = 60;
+
+    await OrderModel.replaceOne(
+      { orderNumber: order.orderNumber },
+      {
+        orderNumber: order.orderNumber,
+        customerName: order.customerName,
+        customerEmail: order.customerEmail,
+        user: demoCustomer._id,
+        items,
+        status: order.status,
+        paymentMethod: "cod",
+        paymentStatus: order.paymentStatus,
+        subtotal,
+        shippingFee,
+        total: subtotal + shippingFee,
+        createdAt: order.createdAt,
+        updatedAt: order.createdAt,
+      },
+      { upsert: true, timestamps: false },
+    );
   }
 
   if ((await AuditLogModel.countDocuments()) === 0) {

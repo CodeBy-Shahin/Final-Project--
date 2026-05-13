@@ -38,6 +38,10 @@ const productSchema = new Schema(
       ref: "Category",
       required: true,
     },
+    vendor: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
     price: {
       type: Number,
       required: true,
@@ -89,6 +93,8 @@ const productSchema = new Schema(
     timestamps: true,
   },
 );
+
+productSchema.index({ vendor: 1 });
 
 export type ProductDocument = InferSchemaType<typeof productSchema> & { category: Types.ObjectId };
 export const ProductModel = model("Product", productSchema);

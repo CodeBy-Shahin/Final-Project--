@@ -3,7 +3,7 @@ import "server-only";
 import { API_BASE_URL } from "@/lib/config";
 import { getSessionToken } from "@/lib/session";
 import { fallbackDashboardOverview, fallbackProducts } from "@/lib/site";
-import type { DashboardOverview, Product } from "@/types/domain";
+import type { DashboardOverview, DemandForecast, Product } from "@/types/domain";
 
 type FetchDataOptions = {
   cache?: RequestCache;
@@ -63,4 +63,18 @@ export async function getDashboardOverview() {
   });
 
   return data ?? fallbackDashboardOverview;
+}
+
+export async function getDemandForecast() {
+  const token = await getSessionToken();
+  const data = await fetchData<DemandForecast>("/analytics/demand-forecast", {
+    token,
+    cache: "no-store",
+  });
+
+  return data ?? {
+    generatedAt: new Date().toISOString(),
+    horizon: "Next 21 days",
+    items: [],
+  };
 }

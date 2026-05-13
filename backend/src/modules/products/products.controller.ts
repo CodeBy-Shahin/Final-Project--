@@ -79,7 +79,7 @@ export const listAllProductsController = asyncHandler(async (req, res) => {
 
 export const createProductController = asyncHandler(async (req, res) => {
   const body = productInputSchema.parse(req.body);
-  const product = await createProduct(body);
+  const product = await createProduct(body, req.user!.sub);
   res.status(201).json({ success: true, data: product });
 });
 

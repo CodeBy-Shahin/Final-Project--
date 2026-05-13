@@ -50,7 +50,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <head>
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="min-h-full flex flex-col bg-background px-2 text-foreground sm:px-4 lg:px-6">
         {children}
         <Toaster richColors position="top-right" />
         <ChatWidget position="bottom" />
