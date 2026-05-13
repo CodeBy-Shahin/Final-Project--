@@ -141,7 +141,7 @@ function makeSku() {
   return "SKU-" + Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
-export async function createProduct(input: ProductInput) {
+export async function createProduct(input: ProductInput, vendorId?: string) {
   const category = await CategoryModel.findById(input.categoryId);
   if (!category) throw new ApiError(400, "Category not found");
 
@@ -154,6 +154,7 @@ export async function createProduct(input: ProductInput) {
     sku,
     description: input.description,
     category: input.categoryId,
+    vendor: vendorId,
     price: input.price,
     compareAtPrice: input.compareAtPrice,
     stock: input.stock ?? 0,

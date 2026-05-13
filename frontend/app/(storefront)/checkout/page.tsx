@@ -23,6 +23,175 @@ type Address = {
   postalCode: string;
 };
 
+type ConfirmedOrder = {
+  id: string;
+  orderNumber: string;
+  customerName: string;
+  customerEmail: string;
+  paymentMethod: string;
+  paymentStatus: string;
+  subtotal: number;
+  shippingFee: number;
+  total: number;
+  items: Array<{
+    productName: string;
+    quantity: number;
+    unitPrice: number;
+  }>;
+  shippingAddress?: {
+    name: string;
+    phone: string;
+    line1: string;
+    line2?: string;
+    city: string;
+    district?: string;
+    postalCode?: string;
+  };
+};
+
+function showConfirmationWindow(win: Window | null, order: ConfirmedOrder) {
+  if (!win) return;
+
+  win.document.open();
+  win.document.write(`
+    <!doctype html>
+    <html>
+      <head>
+        <title>Order Confirmed</title>
+        <style>
+          body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background: #f4f4f6;
+            color: #1f2937;
+            font-family: Arial, sans-serif;
+          }
+          .box {
+            width: min(560px, calc(100vw - 32px));
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            background: #ffffff;
+            padding: 36px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgb(31 41 55 / 0.12);
+          }
+          h1 { margin: 0; font-size: 30px; }
+          p { color: #6b7280; line-height: 1.6; }
+          .number {
+            margin-top: 18px;
+            display: inline-block;
+            border-radius: 999px;
+            background: #fff2eb;
+            color: #9a3412;
+            padding: 10px 16px;
+            font-weight: 700;
+          }
+          .total { margin-top: 18px; font-size: 18px; font-weight: 700; }
+        </style>
+      </head>
+      <body>
+        <main class="box">
+          <h1>Your order is confirmed</h1>
+          <p>Thanks for shopping with us. Your PDF order receipt has been downloaded.</p>
+          <div class="number">${order.orderNumber}</div>
+          <div class="total">Total: ${formatPrice(order.total)}</div>
+        </main>
+      </body>
+    </html>
+  `);
+  win.document.close();
+}
+
+function formatPdfPrice(value: number) {
+  return `BDT ${new Intl.NumberFormat("en-BD", { maximumFractionDigits: 0 }).format(value)}`;
+}
+
+async function downloadOrderPdf(order: ConfirmedOrder) {
+  const { jsPDF } = await import("jspdf");
+  const doc = new jsPDF();
+  const pageWidth = doc.internal.pageSize.getWidth();
+  let y = 18;
+
+  doc.setFontSize(20);
+  doc.text("Smart Commerce", 14, y);
+  doc.setFontSize(14);
+  doc.text("Order Receipt", pageWidth - 14, y, { align: "right" });
+
+  y += 14;
+  doc.setFontSize(10);
+  doc.text(`Order number: ${order.orderNumber}`, 14, y);
+  y += 6;
+  doc.text(`Customer: ${order.customerName}`, 14, y);
+  y += 6;
+  doc.text(`Email: ${order.customerEmail}`, 14, y);
+  y += 6;
+  doc.text(`Payment: ${order.paymentMethod.toUpperCase()} (${order.paymentStatus})`, 14, y);
+
+  if (order.shippingAddress) {
+    y += 10;
+    doc.setFontSize(12);
+    doc.text("Delivery address", 14, y);
+    doc.setFontSize(10);
+    y += 6;
+    doc.text(order.shippingAddress.name, 14, y);
+    y += 6;
+    doc.text(order.shippingAddress.phone, 14, y);
+    y += 6;
+    doc.text(
+      [
+        order.shippingAddress.line1,
+        order.shippingAddress.line2,
+        order.shippingAddress.city,
+        order.shippingAddress.district,
+        order.shippingAddress.postalCode,
+      ]
+        .filter(Boolean)
+        .join(", "),
+      14,
+      y,
+    );
+  }
+
+  y += 14;
+  doc.setFontSize(12);
+  doc.text("Items", 14, y);
+  y += 8;
+  doc.setFontSize(10);
+  doc.text("Product", 14, y);
+  doc.text("Qty", 126, y);
+  doc.text("Price", 146, y);
+  doc.text("Total", 180, y, { align: "right" });
+  y += 3;
+  doc.line(14, y, pageWidth - 14, y);
+  y += 7;
+
+  for (const item of order.items) {
+    const lineTotal = item.quantity * item.unitPrice;
+    doc.text(item.productName.slice(0, 52), 14, y);
+    doc.text(String(item.quantity), 126, y);
+    doc.text(formatPdfPrice(item.unitPrice), 146, y);
+    doc.text(formatPdfPrice(lineTotal), 180, y, { align: "right" });
+    y += 7;
+  }
+
+  y += 4;
+  doc.line(118, y, pageWidth - 14, y);
+  y += 8;
+  doc.text("Subtotal", 126, y);
+  doc.text(formatPdfPrice(order.subtotal), 180, y, { align: "right" });
+  y += 7;
+  doc.text("Shipping", 126, y);
+  doc.text(formatPdfPrice(order.shippingFee), 180, y, { align: "right" });
+  y += 7;
+  doc.setFontSize(12);
+  doc.text("Total", 126, y);
+  doc.text(formatPdfPrice(order.total), 180, y, { align: "right" });
+
+  doc.save(`${order.orderNumber}-receipt.pdf`);
+}
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, total, clear } = useCart();
@@ -68,6 +237,11 @@ export default function CheckoutPage() {
       return;
     }
 
+    const confirmationWindow = window.open("", "_blank", "width=640,height=520");
+    if (confirmationWindow) {
+      confirmationWindow.document.write("<p style='font-family: Arial, sans-serif'>Confirming your order...</p>");
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -89,18 +263,22 @@ export default function CheckoutPage() {
         }),
       });
 
-      const result = (await response.json()) as { success: boolean; data?: { id: string }; message?: string };
+      const result = (await response.json()) as { success: boolean; data?: ConfirmedOrder; message?: string };
 
       if (response.status === 401) {
+        confirmationWindow?.close();
         router.push("/login?next=/checkout&reason=auth");
         return;
       }
 
       if (!response.ok || !result.data) {
+        confirmationWindow?.close();
         setError(result.message ?? "Failed to place order.");
         return;
       }
 
+      await downloadOrderPdf(result.data);
+      showConfirmationWindow(confirmationWindow, result.data);
       clear();
       toast.success("Order placed successfully!");
 

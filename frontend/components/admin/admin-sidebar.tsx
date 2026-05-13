@@ -5,7 +5,9 @@ import { usePathname } from "next/navigation";
 import {
   Boxes,
   ClipboardList,
+  LineChart,
   LayoutDashboard,
+  PackageSearch,
   Sparkles,
   Store,
   Users,
@@ -18,6 +20,8 @@ const items = [
   { href: "/admin/users", label: "Customers", icon: Users },
   { href: "/admin/vendors", label: "Vendors", icon: Store },
   { href: "/admin/inventory", label: "Inventory", icon: Warehouse },
+  { href: "/admin/low-stock-product", label: "Low-stock product", icon: PackageSearch },
+  { href: "/admin/demand-forecast", label: "Demand forecast", icon: LineChart },
   { href: "/products", label: "Catalog", icon: Boxes },
 ];
 

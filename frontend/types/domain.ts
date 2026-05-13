@@ -46,9 +46,11 @@ export type DashboardMetric = {
 export type InventoryAlert = {
   id: string;
   name: string;
+  vendorName: string;
   sku: string;
   stock: number;
   reorderPoint: number;
+  threshold?: number;
   urgency: "critical" | "high" | "watch";
   recommendedOrderQty: number;
 };
@@ -112,4 +114,24 @@ export type DashboardOverview = {
   topProducts: TopProductInsight[];
   recentOrders: OrderSummary[];
   auditActivity: AuditEntry[];
+};
+
+export type DemandForecastItem = {
+  productId: string;
+  name: string;
+  vendorName: string;
+  keywords: string[];
+  totalSold: number;
+  recentSold: number;
+  predictedUnits: number;
+  trend: "rising" | "stable" | "cooling";
+  confidence: number;
+  history: Array<{ label: string; units: number }>;
+  forecast: Array<{ label: string; units: number }>;
+};
+
+export type DemandForecast = {
+  generatedAt: string;
+  horizon: string;
+  items: DemandForecastItem[];
 };
