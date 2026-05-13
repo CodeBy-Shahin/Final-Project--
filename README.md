@@ -158,9 +158,22 @@ npm run dev                   # http://localhost:3000
 
 ### Backend (`backend/.env`)
 
+Create `backend/.env` from this template:
+
+```env
+PORT=5000
+NODE_ENV=development
+MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>/<database>?retryWrites=true&w=majority
+JWT_ACCESS_SECRET=<your-access-token-secret>
+JWT_REFRESH_SECRET=<your-refresh-token-secret>
+CLIENT_URL=http://localhost:3000
+LOG_LEVEL=info
+```
+
 | Variable | Description | Default |
 |---|---|---|
 | `PORT` | API server port | `5000` |
+| `NODE_ENV` | Runtime environment | `development` |
 | `MONGODB_URI` | MongoDB connection string | — |
 | `JWT_ACCESS_SECRET` | Secret for access tokens | — |
 | `JWT_REFRESH_SECRET` | Secret for refresh tokens | — |
@@ -173,7 +186,7 @@ npm run dev                   # http://localhost:3000
 |---|---|---|
 | `NEXT_PUBLIC_API_BASE_URL` | Express API base URL | `http://localhost:5000/api` |
 
-> In Docker these are set automatically via `docker-compose.yml`. You do not need `.env` files when using Docker.
+> `backend/.env` contains secrets and is intentionally ignored by Git. Docker Compose reads it through `env_file`, so create it locally before starting the backend container.
 
 ---
 
