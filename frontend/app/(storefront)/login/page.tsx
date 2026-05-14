@@ -1,4 +1,4 @@
-import { LayoutDashboard, LockKeyhole, Store, UserRound } from "lucide-react";
+import { LayoutDashboard, Store, UserRound } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { LoginForm } from "@/components/auth/login-form";

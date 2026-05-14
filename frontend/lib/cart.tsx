@@ -24,24 +24,19 @@ type CartContextValue = {
 const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
+  const [items, setItems] = useState<CartItem[]>(() => {
+    if (typeof window === "undefined") return [];
     try {
       const stored = localStorage.getItem("sc-cart");
-      if (stored) setItems(JSON.parse(stored) as CartItem[]);
+      return stored ? (JSON.parse(stored) as CartItem[]) : [];
     } catch {
-      // ignore
+      return [];
     }
-    setHydrated(true);
-  }, []);
+  });
 
   useEffect(() => {
-    if (hydrated) {
-      localStorage.setItem("sc-cart", JSON.stringify(items));
-    }
-  }, [items, hydrated]);
+    localStorage.setItem("sc-cart", JSON.stringify(items));
+  }, [items]);
 
   const addItem = useCallback((newItem: Omit<CartItem, "quantity"> & { quantity?: number }) => {
     setItems((current) => {

@@ -1,5 +1,4 @@
 import { API_BASE_URL } from "@/lib/config";
-import { getSessionToken } from "@/lib/session";
 import { AddProductForm } from "@/components/vendor/add-product-form";
 
 type Category = { id: string; name: string; slug: string };

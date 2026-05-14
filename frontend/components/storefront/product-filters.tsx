@@ -29,10 +29,14 @@ export function ProductFilters({ defaultQuery = "", defaultSort = "", defaultMin
       const params = new URLSearchParams(searchParams.toString());
       const values = { query, sort, min, max, ...overrides };
 
-      values.query ? params.set("query", values.query) : params.delete("query");
-      values.sort ? params.set("sort", values.sort) : params.delete("sort");
-      values.min ? params.set("min", values.min) : params.delete("min");
-      values.max ? params.set("max", values.max) : params.delete("max");
+      if (values.query) params.set("query", values.query);
+      else params.delete("query");
+      if (values.sort) params.set("sort", values.sort);
+      else params.delete("sort");
+      if (values.min) params.set("min", values.min);
+      else params.delete("min");
+      if (values.max) params.set("max", values.max);
+      else params.delete("max");
 
       router.push(`/products?${params.toString()}`);
     },

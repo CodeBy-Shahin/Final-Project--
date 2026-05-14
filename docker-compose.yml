@@ -1,20 +1,4 @@
 services:
-  mongo:
-    image: mongo:8
-    container_name: smart-commerce-mongo
-    restart: unless-stopped
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_DATABASE: smart_ecommerce
-    volumes:
-      - mongo_data:/data/db
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   backend:
     build:
       context: ./backend
@@ -29,9 +13,6 @@ services:
       NODE_ENV: production
       CLIENT_URL: http://localhost:3000
       LOG_LEVEL: info
-    depends_on:
-      mongo:
-        condition: service_healthy
 
   frontend:
     build:
@@ -46,6 +27,3 @@ services:
       NODE_ENV: production
     depends_on:
       - backend
-
-volumes:
-  mongo_data:

@@ -1,19 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "sonner";
 import ChatWidget from "@/components/chatbot/chat-widget";
 import "./globals.css";
-
-const jakartaSans = Plus_Jakarta_Sans({
-  variable: "--font-jakarta-sans",
-  subsets: ["latin"],
-});
-
-const dmMono = DM_Mono({
-  variable: "--font-dm-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
-});
 
 export const metadata: Metadata = {
   title: {
@@ -46,7 +34,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" data-scroll-behavior="smooth" className={`${jakartaSans.variable} ${dmMono.variable} h-full antialiased`}>
+    <html lang="en" data-scroll-behavior="smooth" className="h-full antialiased">
       <head>
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>

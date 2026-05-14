@@ -8,7 +8,7 @@ A full-stack e-commerce platform with role-based dashboards for admins, vendors,
 |---|---|
 | Frontend | Next.js 16 (App Router) · React 19 · Tailwind CSS 4 · shadcn/ui |
 | Backend | Express.js 5 · Node.js 22 |
-| Database | MongoDB 8 |
+| Database | MongoDB Atlas |
 | Auth | JWT (httpOnly cookie) |
 | Containerisation | Docker · Docker Compose |
 
@@ -26,11 +26,10 @@ A full-stack e-commerce platform with role-based dashboards for admins, vendors,
 docker compose up --build
 ```
 
-This spins up three containers:
+This spins up two app containers. The database is MongoDB Atlas through `backend/.env`.
 
 | Container | Description | Port |
 |---|---|---|
-| `smart-commerce-mongo` | MongoDB database | 27017 |
 | `smart-commerce-backend` | Express REST API | 5000 |
 | `smart-commerce-frontend` | Next.js web app | 3000 |
 
@@ -129,22 +128,19 @@ Use this if you want hot-reload and faster iteration.
 ### Prerequisites
 
 - Node.js 22+
-- MongoDB running locally **or** a MongoDB Atlas connection string
+- MongoDB Atlas connection string
 
 ### Setup
 
 ```bash
-# 1. Start MongoDB (skip if using Atlas)
-docker compose up mongo -d
-
-# 2. Backend
+# 1. Backend
 cd backend
 cp .env.example .env          # fill in MONGODB_URI, JWT secrets
 npm install
 npm run seed                  # seed roles, categories, demo users
 npm run dev                   # http://localhost:5000
 
-# 3. Frontend (new terminal)
+# 2. Frontend (new terminal)
 cd frontend
 # create frontend/.env.local:
 # NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api
@@ -174,7 +170,7 @@ LOG_LEVEL=info
 |---|---|---|
 | `PORT` | API server port | `5000` |
 | `NODE_ENV` | Runtime environment | `development` |
-| `MONGODB_URI` | MongoDB connection string | — |
+| `MONGODB_URI` | MongoDB Atlas connection string | — |
 | `JWT_ACCESS_SECRET` | Secret for access tokens | — |
 | `JWT_REFRESH_SECRET` | Secret for refresh tokens | — |
 | `CLIENT_URL` | Allowed CORS origin | `http://localhost:3000` |
@@ -232,10 +228,7 @@ docker compose up --build
 # Stop everything
 docker compose down
 
-# Stop and delete the database volume (full reset)
-docker compose down -v
-
-# Re-seed after a reset
+# Re-seed Atlas data after a reset
 docker compose exec backend node dist/seed.js
 
 # View backend logs

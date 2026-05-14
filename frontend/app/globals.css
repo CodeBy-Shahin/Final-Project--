@@ -34,8 +34,8 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
-  --font-sans: var(--font-jakarta-sans);
-  --font-mono: var(--font-dm-mono);
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-mono: "Courier New", Consolas, monospace;
 }
 
 * {
@@ -52,7 +52,7 @@ body {
     radial-gradient(circle at top right, rgb(21 154 84 / 0.06), transparent 24%),
     var(--background);
   color: var(--foreground);
-  font-family: var(--font-jakarta-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }
 
 a {
