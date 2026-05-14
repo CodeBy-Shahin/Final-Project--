@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { LayoutDashboard, Package, ShoppingBag, UserRound } from "lucide-react";
+import { LayoutDashboard, Package, PackageSearch, ShoppingBag, UserRound } from "lucide-react";
 
 import { LogoutButton } from "@/components/auth/logout-button";
 import { SessionProvider } from "@/components/auth/session-provider";
@@ -34,6 +34,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
               {[
                 { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
                 { href: "/dashboard/orders", label: "My orders", icon: Package },
+                { href: "/dashboard/tracking", label: "Track orders", icon: PackageSearch },
               ].map((item) => {
                 const Icon = item.icon;
                 return (

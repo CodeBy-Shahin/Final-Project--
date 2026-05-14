@@ -33,6 +33,76 @@ function generateOrderNumber() {
   return `ORD-${timestamp}-${random}`;
 }
 
+function generateTrackingNumber() {
+  const timestamp = Date.now().toString(36).toUpperCase();
+  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+  return `SC-${timestamp}-${random}`;
+}
+
+function addDays(date: Date, days: number) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + days);
+  return next;
+}
+
+const trackingCopy: Record<
+  string,
+  { label: string; description: string; location?: string }
+> = {
+  pending: {
+    label: "Order placed",
+    description: "We received the order and are waiting for admin approval.",
+    location: "Online store",
+  },
+  processing: {
+    label: "Approved for processing",
+    description: "The order has been approved and the products are being packed.",
+    location: "Fulfillment center",
+  },
+  shipped: {
+    label: "Out for shipment",
+    description: "The parcel has left the warehouse and is moving through the delivery network.",
+    location: "Courier hub",
+  },
+  delivered: {
+    label: "Delivered",
+    description: "The parcel was delivered to the customer address.",
+    location: "Delivery address",
+  },
+  cancelled: {
+    label: "Order cancelled",
+    description: "This order was cancelled and will not be shipped.",
+    location: "Online store",
+  },
+};
+
+function createTrackingEvent(status: string) {
+  const details = trackingCopy[status] ?? trackingCopy.pending;
+  return {
+    status,
+    label: details.label,
+    description: details.description,
+    location: details.location,
+    createdAt: new Date(),
+  };
+}
+
+function getTrackingEvents(order: Record<string, unknown>) {
+  const events = order.trackingEvents;
+  if (Array.isArray(events) && events.length > 0) return events;
+
+  const details = trackingCopy[String(order.status)] ?? trackingCopy.pending;
+  return [
+    {
+      status: order.status,
+      label: details.label,
+      description: details.description,
+      location: details.location,
+      createdAt: order.createdAt,
+    },
+  ];
+}
+
 function serializeOrder(order: Record<string, unknown>) {
   return {
     id: String(order._id),
@@ -46,6 +116,8 @@ function serializeOrder(order: Record<string, unknown>) {
     shippingFee: order.shippingFee,
     total: order.total,
     shippingAddress: order.shippingAddress,
+    shipment: order.shipment,
+    trackingEvents: getTrackingEvents(order),
     notes: order.notes,
     items: order.items,
     createdAt: order.createdAt,
@@ -89,6 +161,7 @@ export async function createOrder(input: CreateOrderInput) {
     shippingFee,
     total,
     shippingAddress: input.shippingAddress,
+    trackingEvents: [createTrackingEvent("pending")],
     notes: input.notes,
   });
 
@@ -142,9 +215,39 @@ export async function updateOrderStatus(
   const validStatuses = ["pending", "processing", "shipped", "delivered", "cancelled"];
   if (!validStatuses.includes(status)) throw new ApiError(400, "Invalid status");
 
+  const existingOrder = await OrderModel.findById(orderId).lean();
+  if (!existingOrder) throw new ApiError(404, "Order not found");
+
+  const update: Record<string, unknown> = { status };
+  if (existingOrder.status !== status) {
+    update.$push = { trackingEvents: createTrackingEvent(status) };
+  }
+
+  if (status === "shipped" && !existingOrder.shipment?.trackingNumber) {
+    update.shipment = {
+      carrier: "Smart Courier",
+      trackingNumber: generateTrackingNumber(),
+      estimatedDelivery: addDays(new Date(), 3),
+      currentLocation: "Courier hub",
+    };
+  }
+
+  if (status === "processing") {
+    update["shipment.currentLocation"] = "Fulfillment center";
+  }
+
+  if (status === "delivered") {
+    update["shipment.currentLocation"] = "Delivery address";
+    update["shipment.estimatedDelivery"] = new Date();
+  }
+
+  if (status === "cancelled") {
+    update["shipment.currentLocation"] = "Order cancelled";
+  }
+
   const order = await OrderModel.findByIdAndUpdate(
     orderId,
-    { status },
+    update,
     { new: true },
   ).lean();
 

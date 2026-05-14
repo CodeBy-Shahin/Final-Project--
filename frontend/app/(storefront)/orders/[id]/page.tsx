@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Package } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { API_BASE_URL } from "@/lib/config";
 import { formatPrice } from "@/lib/commerce";
 import { getSessionToken } from "@/lib/session";
+import { OrderTrackingTimeline } from "@/components/storefront/order-tracking-timeline";
 
 type OrderItem = {
   productName: string;
@@ -32,6 +32,19 @@ type Order = {
     city: string;
     district?: string;
   };
+  shipment?: {
+    carrier?: string;
+    trackingNumber?: string;
+    estimatedDelivery?: string;
+    currentLocation?: string;
+  };
+  trackingEvents?: Array<{
+    status: string;
+    label: string;
+    description: string;
+    location?: string;
+    createdAt: string;
+  }>;
   createdAt: string;
 };
 
@@ -95,7 +108,7 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
         <Card className="rounded-2xl border-border/70">
           <CardContent className="p-6">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="font-semibold">Order status</h2>
+              <h2 className="font-semibold">Order tracking</h2>
               <span
                 className={`rounded-full border px-3 py-1 text-xs font-semibold capitalize ${statusColors[order.status] ?? "bg-secondary text-secondary-foreground"}`}
               >
@@ -111,6 +124,13 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
                 <span className="text-muted-foreground">Payment status</span>
                 <div className="mt-1 font-medium capitalize">{order.paymentStatus}</div>
               </div>
+            </div>
+            <div className="mt-6">
+              <OrderTrackingTimeline
+                status={order.status}
+                shipment={order.shipment}
+                trackingEvents={order.trackingEvents}
+              />
             </div>
           </CardContent>
         </Card>

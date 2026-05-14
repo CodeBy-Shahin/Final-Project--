@@ -1,6 +1,7 @@
 import { TrendingDown, TrendingUp } from "lucide-react";
 
 import { DemandForecastChart } from "@/components/admin/demand-forecast-chart";
+import { ForecastReportExport } from "@/components/admin/forecast-report-export";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getDemandForecast } from "@/lib/api";
@@ -19,16 +20,19 @@ export default async function AdminDemandForecastPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Demand forecast</h1>
           <p className="mt-1 text-muted-foreground">
             Python NLP analysis of previous sales with future product demand prediction.
           </p>
         </div>
-        <div className="rounded-md border border-border/70 bg-card px-3 py-2 text-sm">
-          <span className="text-muted-foreground">Horizon</span>
-          <span className="ml-2 font-semibold">{forecast.horizon}</span>
+        <div className="flex flex-wrap items-center gap-3">
+          <ForecastReportExport forecast={forecast} />
+          <div className="rounded-md border border-border/70 bg-card px-3 py-2 text-sm">
+            <span className="text-muted-foreground">Horizon</span>
+            <span className="ml-2 font-semibold">{forecast.horizon}</span>
+          </div>
         </div>
       </div>
 

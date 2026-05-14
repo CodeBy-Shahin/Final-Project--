@@ -67,6 +67,20 @@ export type OrderSummary = {
   paymentMethod: string;
   paymentStatus: string;
   createdAt: string;
+  updatedAt?: string;
+  shipment?: {
+    carrier?: string;
+    trackingNumber?: string;
+    estimatedDelivery?: string;
+    currentLocation?: string;
+  };
+  trackingEvents?: Array<{
+    status: string;
+    label: string;
+    description: string;
+    location?: string;
+    createdAt: string;
+  }>;
   items: Array<{
     productName: string;
     quantity: number;

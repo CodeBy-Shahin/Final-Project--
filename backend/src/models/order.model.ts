@@ -39,6 +39,31 @@ const shippingAddressSchema = new Schema(
   { _id: false },
 );
 
+const trackingEventSchema = new Schema(
+  {
+    status: {
+      type: String,
+      enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
+      required: true,
+    },
+    label: { type: String, required: true, trim: true },
+    description: { type: String, required: true, trim: true },
+    location: { type: String, trim: true },
+    createdAt: { type: Date, default: Date.now },
+  },
+  { _id: false },
+);
+
+const shipmentSchema = new Schema(
+  {
+    carrier: { type: String, trim: true },
+    trackingNumber: { type: String, trim: true },
+    estimatedDelivery: { type: Date },
+    currentLocation: { type: String, trim: true },
+  },
+  { _id: false },
+);
+
 const orderSchema = new Schema(
   {
     orderNumber: {
@@ -98,6 +123,13 @@ const orderSchema = new Schema(
     },
     shippingAddress: {
       type: shippingAddressSchema,
+    },
+    shipment: {
+      type: shipmentSchema,
+    },
+    trackingEvents: {
+      type: [trackingEventSchema],
+      default: [],
     },
     notes: {
       type: String,
