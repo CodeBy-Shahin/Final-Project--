@@ -1,4 +1,13 @@
 services:
+  mongo:
+    image: mongo:7
+    container_name: smart-commerce-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
   backend:
     build:
       context: ./backend
@@ -13,17 +22,31 @@ services:
       NODE_ENV: production
       CLIENT_URL: http://localhost:3000
       LOG_LEVEL: info
+      MONGODB_URI: mongodb://mongo:27017/smart_ecommerce
+      MongoDB_fallback: ""
+      mongo_fallback: ""
+      MONGO_FALLBACK: ""
+      MONGODB_FALLBACK_URI: ""
+      MONGODB_SECONDARY_URI: ""
+      MONGODB_URI_SECONDARY: ""
+      MONGODB_URI_2: ""
+    depends_on:
+      - mongo
 
   frontend:
     build:
       context: ./frontend
       args:
-        NEXT_PUBLIC_API_BASE_URL: http://backend:5000/api
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:5000/api
     container_name: smart-commerce-frontend
     restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
       NODE_ENV: production
+      INTERNAL_API_BASE_URL: http://backend:5000/api
     depends_on:
       - backend
+
+volumes:
+  mongo-data:

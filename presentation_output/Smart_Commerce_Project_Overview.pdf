@@ -1,0 +1,162 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [6 0 R 8 0 R 10 0 R] /Count 3 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Length 4229 >>
+stream
+q 0.118 0.541 0.541 rg 0 774 612 18 re f Q
+q 0.965 0.976 0.988 rg 0 710 612 64 re f Q
+BT /F2 18 Tf 0.086 0.125 0.200 rg 64 738 Td (Smart Commerce) Tj ET
+BT /F1 10 Tf 0.388 0.439 0.514 rg 418 740 Td (Project Overview) Tj ET
+BT /F2 22 Tf 0.086 0.125 0.200 rg 64 720 Td (Smart Commerce: AI-Driven Smart E-Commerce Platform) Tj ET
+BT /F1 12 Tf 0.149 0.192 0.259 rg 64 686 Td (A complete overview of the final project, including the problem, solution, users,) Tj ET
+BT /F1 12 Tf 0.149 0.192 0.259 rg 64 668 Td (features, workflow, technology stack, demand forecasting module, and business value.) Tj ET
+BT /F2 15 Tf 0.086 0.125 0.200 rg 64 636 Td (Project Overview) Tj ET
+q 0.118 0.541 0.541 rg 64 628 44 2 re f Q
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 608 Td (Project Title: Smart Commerce - AI-Driven Smart E-Commerce Platform) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 586 Td (Smart Commerce is a full-stack e-commerce platform designed to solve common problems in online) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 570 Td (business management, especially for small and medium-sized sellers. The system goes beyond a) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 554 Td (simple shopping website by combining a customer storefront, role-based dashboards, order) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 538 Td (management, inventory monitoring, analytics, and demand forecasting.) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 516 Td (The main purpose of the project is to help businesses manage products, vendors, customers,) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 500 Td (orders, and stock from one centralized platform while using data-driven insights to make better) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 484 Td (decisions.) Tj ET
+BT /F2 15 Tf 0.086 0.125 0.200 rg 64 460 Td (Problem Statement) Tj ET
+q 0.118 0.541 0.541 rg 64 452 44 2 re f Q
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 432 Td (Many e-commerce businesses face difficulties managing daily operations efficiently. Product) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 416 Td (stock may be tracked manually, order status may not be clear, and admins often lack real-time) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 400 Td (insights into sales, customers, and inventory. Because of this, businesses may face stock) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 384 Td (shortages, delayed order processing, poor customer experience, and weak decision-making.) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 362 Td (Smart Commerce solves these problems by providing a structured digital platform where each) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 346 Td (user role has the right tools and access.) Tj ET
+BT /F2 15 Tf 0.086 0.125 0.200 rg 64 322 Td (Main Users) Tj ET
+q 0.118 0.541 0.541 rg 64 314 44 2 re f Q
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 294 Td (Admin: The admin manages the whole platform. Admins can view dashboard analytics, manage) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 278 Td (users, add vendors, monitor orders, check inventory alerts, and review audit activity.) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 256 Td (Vendor: Vendors manage their own products, inventory, and incoming orders. They can add new) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 240 Td (products, update product status, adjust stock, and process customer orders.) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 218 Td (Customer: Customers can browse products, search and filter items, add products to cart, place) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 202 Td (orders, and track delivery status from their dashboard.) Tj ET
+BT /F2 15 Tf 0.086 0.125 0.200 rg 64 178 Td (Core Features) Tj ET
+q 0.118 0.541 0.541 rg 64 170 44 2 re f Q
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 150 Td (Smart Commerce includes a modern customer-facing storefront where users can browse) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 134 Td (products, view product details, add items to cart, and complete checkout. After placing an) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 118 Td (order, customers can track the order status through stages such as pending, processing,) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 102 Td (shipped, and delivered.) Tj ET
+BT /F1 9 Tf 0.388 0.439 0.514 rg 512 38 Td (Page 1) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 5 0 R >>
+endobj
+7 0 obj
+<< /Length 4503 >>
+stream
+q 0.118 0.541 0.541 rg 0 774 612 18 re f Q
+q 0.965 0.976 0.988 rg 0 710 612 64 re f Q
+BT /F2 18 Tf 0.086 0.125 0.200 rg 64 738 Td (Smart Commerce) Tj ET
+BT /F1 10 Tf 0.388 0.439 0.514 rg 418 740 Td (Project Overview) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 720 Td (The admin dashboard provides key business information such as total revenue, number of) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 704 Td (orders, active products, customers, recent orders, inventory alerts, top products, and audit) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 688 Td (logs. This helps admins understand the business condition quickly.) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 666 Td (The vendor dashboard allows vendors to manage products and orders independently. Vendors) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 650 Td (can add products, publish or draft them, manage stock, and update delivery progress.) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 628 Td (The platform also includes role-based access control, meaning users can only access the pages) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 612 Td (and actions allowed for their role. This improves security and keeps the system organized.) Tj ET
+BT /F2 15 Tf 0.086 0.125 0.200 rg 64 588 Td (Demand Forecasting Module) Tj ET
+q 0.118 0.541 0.541 rg 64 580 44 2 re f Q
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 560 Td (One of the important intelligent features of the project is demand forecasting. The backend) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 544 Td (collects product sales history and sends it to a Python forecasting script. The script analyzes) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 528 Td (recent sales, total sold units, product trends, and keywords to predict future demand.) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 506 Td (The forecast provides predicted units for the next 7, 14, and 21 days. It also gives a trend) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 490 Td (label such as rising, stable, or cooling, along with a confidence score. This helps admins and) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 474 Td (vendors decide which products need restocking before they run out.) Tj ET
+BT /F2 15 Tf 0.086 0.125 0.200 rg 64 450 Td (Technology Stack) Tj ET
+q 0.118 0.541 0.541 rg 64 442 44 2 re f Q
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 422 Td (The frontend is built with Next.js, React, TypeScript, Tailwind CSS, and shadcn/ui. It) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 406 Td (provides a clean, responsive, and professional user interface.) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 384 Td (The backend is built with Node.js, Express.js, TypeScript, and MongoDB with Mongoose. It) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 368 Td (handles authentication, authorization, products, orders, users, vendors, analytics, and) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 352 Td (forecasting.) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 330 Td (The database uses MongoDB Atlas, where collections such as users, roles, products,) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 314 Td (categories, inventory, orders, and audit logs are stored.) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 292 Td (Authentication is handled using JWT with httpOnly cookies, which improves security by) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 276 Td (protecting user sessions.) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 254 Td (The project also supports Docker and Docker Compose, making it easier to run the frontend) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 238 Td (and backend services together.) Tj ET
+BT /F2 15 Tf 0.086 0.125 0.200 rg 64 214 Td (System Workflow) Tj ET
+q 0.118 0.541 0.541 rg 64 206 44 2 re f Q
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 186 Td (A customer visits the storefront, browses products, adds items to cart, and places an order) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 170 Td (through checkout. After the order is created, the system saves the order details in the) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 154 Td (database and starts tracking the order from the pending stage.) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 132 Td (Admins or vendors can update the order status. Each update creates a tracking event, so the) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 116 Td (customer can see the latest progress. At the same time, the admin dashboard shows recent) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 100 Td (orders, inventory alerts, and business metrics.) Tj ET
+BT /F1 9 Tf 0.388 0.439 0.514 rg 512 38 Td (Page 2) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 7 0 R >>
+endobj
+9 0 obj
+<< /Length 2597 >>
+stream
+q 0.118 0.541 0.541 rg 0 774 612 18 re f Q
+q 0.965 0.976 0.988 rg 0 710 612 64 re f Q
+BT /F2 18 Tf 0.086 0.125 0.200 rg 64 738 Td (Smart Commerce) Tj ET
+BT /F1 10 Tf 0.388 0.439 0.514 rg 418 740 Td (Project Overview) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 720 Td (For demand forecasting, sales data is analyzed and converted into forecast results. These) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 704 Td (results help the business identify products with high future demand and plan stock accordingly.) Tj ET
+BT /F2 15 Tf 0.086 0.125 0.200 rg 64 680 Td (Business Value) Tj ET
+q 0.118 0.541 0.541 rg 64 672 44 2 re f Q
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 652 Td (Smart Commerce improves business operations by bringing all important e-commerce activities) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 636 Td (into one platform. It reduces manual work, improves order tracking, helps prevent low-stock) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 620 Td (problems, and gives admins better visibility over the business.) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 598 Td (The demand forecasting feature adds extra value because it helps the business make decisions) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 582 Td (based on data instead of guessing. This can reduce missed sales, improve customer satisfaction,) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 566 Td (and support better inventory planning.) Tj ET
+BT /F2 15 Tf 0.086 0.125 0.200 rg 64 542 Td (Conclusion) Tj ET
+q 0.118 0.541 0.541 rg 64 534 44 2 re f Q
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 514 Td (Smart Commerce is a complete e-commerce management system with modern technology and) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 498 Td (intelligent features. It provides a smooth shopping experience for customers, useful tools for) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 482 Td (vendors, and powerful management features for admins.) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 460 Td (The project successfully combines storefront functionality, secure role-based access, order) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 444 Td (tracking, inventory monitoring, analytics, and demand forecasting into one professional) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 428 Td (platform. Future improvements could include online payment integration, AI product) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 412 Td (recommendations, advanced reporting, automated restocking suggestions, and deployment to a) Tj ET
+BT /F1 11 Tf 0.149 0.192 0.259 rg 64 396 Td (live cloud platform.) Tj ET
+BT /F1 9 Tf 0.388 0.439 0.514 rg 512 38 Td (Page 3) Tj ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 9 0 R >>
+endobj
+xref
+0 11
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000134 00000 n 
+0000000204 00000 n 
+0000000279 00000 n 
+0000004560 00000 n 
+0000004696 00000 n 
+0000009251 00000 n 
+0000009387 00000 n 
+0000012036 00000 n 
+trailer
+<< /Size 11 /Root 1 0 R >>
+startxref
+12173
+%%EOF

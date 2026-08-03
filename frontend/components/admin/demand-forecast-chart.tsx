@@ -31,7 +31,7 @@ export function DemandForecastChart({ items }: { items: DemandForecastItem[] }) 
             cursor={{ fill: "rgb(248 86 6 / 0.08)" }}
             formatter={(value, name) => [
               `${Number(value ?? 0)} units`,
-              name === "recent" ? "Recent sales" : "Predicted sales",
+              String(name),
             ]}
           />
           <Legend />
