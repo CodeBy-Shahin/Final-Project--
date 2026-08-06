@@ -143,7 +143,9 @@ npm run dev                   # http://localhost:5000
 # 2. Frontend (new terminal)
 cd frontend
 # create frontend/.env.local:
-# NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api
+# NEXT_PUBLIC_BACKEND_ORIGIN=http://localhost
+# NEXT_PUBLIC_BACKEND_PORT=5000
+# NEXT_PUBLIC_API_PATH=/api
 npm install
 npm run dev                   # http://localhost:3000
 ```
@@ -157,6 +159,7 @@ npm run dev                   # http://localhost:3000
 Create `backend/.env` from this template:
 
 ```env
+# Render and many hosts provide PORT automatically in production.
 PORT=5000
 NODE_ENV=development
 MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>/<database>?retryWrites=true&w=majority
@@ -180,7 +183,19 @@ LOG_LEVEL=info
 
 | Variable | Description | Default |
 |---|---|---|
-| `NEXT_PUBLIC_API_BASE_URL` | Express API base URL | `http://localhost:5000/api` |
+| `NEXT_PUBLIC_API_BASE_URL` | Full Express API URL override. Use this after deploying the backend. | `http://localhost:5000/api` |
+| `NEXT_PUBLIC_BACKEND_ORIGIN` | Backend origin used when `NEXT_PUBLIC_API_BASE_URL` is not set. | `http://localhost` |
+| `NEXT_PUBLIC_BACKEND_PORT` | Backend port used for local development. | `5000` |
+| `NEXT_PUBLIC_API_PATH` | Backend API route prefix. | `/api` |
+| `INTERNAL_API_BASE_URL` | Optional server-to-server API URL for Docker/private networks. | same as public API URL |
+
+After deploying the backend, set the frontend API value to the deployed backend URL:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=https://your-render-backend.onrender.com/api
+```
+
+Also set the backend `CLIENT_URL` to your deployed frontend URL so CORS allows browser requests. For Next.js public env variables, redeploy/rebuild the frontend after changing `NEXT_PUBLIC_*` values.
 
 > `backend/.env` contains secrets and is intentionally ignored by Git. Docker Compose reads it through `env_file`, so create it locally before starting the backend container.
 
